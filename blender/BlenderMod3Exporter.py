@@ -108,7 +108,7 @@ class BlenderExporterAPI(ModellingAPI):
     def showMessageBox(message = "", title = "Message Box", icon = 'INFO'):
     
         def draw(self, context):
-            self.layout.label(message)
+            self.layout.label(text=message)
     
         bpy.context.window_manager.popup_menu(draw, title = title, icon = icon)
     
@@ -244,7 +244,7 @@ class BlenderExporterAPI(ModellingAPI):
                 if name in groupToBone:
                     skeletonElement = skeletonMap[groupToBone[name]]
                     boneCoordinates = skeletonMap.getBoneByName(groupToBone[name]).matrix_world.inverted()
-                    groups[skeletonElement].append((boneCoordinates*vertex.co).freeze())
+                    groups[skeletonElement].append((boneCoordinates@vertex.co).freeze())
         return {k:list(set(i)) for k,i in groups.items() if len(i)>0}
     
     @staticmethod
@@ -359,7 +359,7 @@ class BlenderExporterAPI(ModellingAPI):
             return 0
         if "Type" in rootCandidate:
             if rootCandidate["Type"] == "MOD3_SkeletonRoot":
-                if rootCandidate.hide:
+                if rootCandidate.hide_get:
                     return 3
                 return 4
             else:
@@ -409,7 +409,7 @@ class BlenderExporterAPI(ModellingAPI):
             #Check Child Constraint
             bone["child"] = BlenderExporterAPI.getTarget(child, errorHandler)
             LMatrix= child.matrix_local.copy()
-            AMatrix= LMatrix.inverted()*(storage[pix]["AMatrix"] if len(storage) and pix != 255  else Matrix.Identity(4))
+            AMatrix= LMatrix.inverted()@(storage[pix]["AMatrix"] if len(storage) and pix != 255  else Matrix.Identity(4))
             bone["x"], bone["y"], bone["z"] = (LMatrix[i][3] for i in range(3))
             bone["parentId"] = pix
             bone["length"]=math.sqrt(bone["x"]**2 +bone["y"]**2+ bone["z"]**2)
