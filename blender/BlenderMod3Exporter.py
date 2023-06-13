@@ -498,7 +498,7 @@ class BlenderExporterAPI(ModellingAPI):
             vTangent = list(map(round, loop.tangent*127)) + [int(loop.bitangent_sign)*127]
             if loop.vertex_index in normals and \
                 any([not (-1<=(c0-c1)<=1) for c0,c1 in zip(normals[loop.vertex_index],vNormal) ]):
-                bpy.context.scene.cursor_location = mesh.vertices[loop.vertex_index].co
+                bpy.context.scene.cursor.location = mesh.vertices[loop.vertex_index].co
                 errorHandler.duplicateNormal(loop.vertex_index, vNormal, vTangent, normals)
             else:
                 normals[loop.vertex_index] = vNormal
