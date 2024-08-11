@@ -8,7 +8,7 @@ Additionally, under `Asterisk's Plugin Notes` are notes on the format that are n
 
 ## Installation
 1. Open Blender then go to `Edit > Preferences... > Add-ons`
-2. Press the `Install...` button on the top right
+2. Press the `Install...` button in the top right
 3. Go to the folder you download this plugin to
     1. Most likely your `Downloads` folder which can be found on the left side under `System`
 4. Click on the downloaded zip then the `Install Add-on` button
