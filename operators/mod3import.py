@@ -4,6 +4,7 @@ Created on Wed Mar  6 14:09:29 2019
 
 @author: AsteriskAmpersand
 """
+
 import bpy
 from bpy_extras.io_utils import ImportHelper
 from bpy.props import StringProperty, BoolProperty, EnumProperty
@@ -24,115 +25,115 @@ class Context():
 
 class ImportMOD3(Operator, ImportHelper):
     bl_idname = "custom_import.import_mhw_mod3"
-    bl_label = "Load MHW MOD3 file (.mod3)"
+    bl_label = "Import MOD3"
     bl_options = {'REGISTER', 'PRESET', 'UNDO'}
+    __doc__ = "Load a MOD3 file"
 
     # ImportHelper mixin class uses this
     filename_ext = ".mod3"
-    filter_glob = StringProperty(default="*.mod3", options={'HIDDEN'}, maxlen=255)
+    filter_glob: StringProperty(default = "*.mod3", options = {'HIDDEN'}, maxlen = 255)
 
-    clear_scene : BoolProperty(
-        name = "Clear scene before import.",
+    clear_scene: BoolProperty(
+        name = "Clear Scene Before Import",
         description = "Clears all contents before importing",
         default = True)
-    maximize_clipping : BoolProperty(
-        name = "Maximizes clipping distance.",
-        description = "Maximizes clipping distance to be able to see all of the model at once.",
+    maximize_clipping: BoolProperty(
+        name = "Maximize Clipping Distance",
+        description = "Maximizes clipping distance to be able to see the entire model at once",
         default = True)
-    high_lod : BoolProperty(
-        name = "Only import high LOD parts.",
-        description = "Skip meshparts with low level of detail.",
+    high_lod: BoolProperty(
+        name = "Only Import High LOD Parts",
+        description = "Skip mesh parts with low level of detail",
         default = True)
-    import_header : BoolProperty(
-        name = "Import File Header.",
-        description = "Imports file headers as scene properties.",
+    import_header: BoolProperty(
+        name = "Import File Header",
+        description = "Imports file headers as scene properties",
         default = True)
-    import_meshparts : BoolProperty(
-        name = "Import Meshparts.",
-        description = "Imports mesh parts as meshes.",
+    import_meshparts: BoolProperty(
+        name = "Import Mesh Parts",
+        description = "Imports mesh parts as meshes",
         default = True)
-    import_textures : BoolProperty(
-        name = "Import Textures.",
-        description = "Imports texture as specified by mrl3.",
+    import_textures: BoolProperty(
+        name = "Import Textures",
+        description = "Imports texture as specified by MRL3",
         default = True)
-    import_materials : BoolProperty(
-        name = "Import Materials.",
-        description = "Imports maps as materials as specified by mrl3.",
+    import_materials: BoolProperty(
+        name = "Import Materials",
+        description = "Imports maps as materials as specified by MRL3",
         default = False)
-    omit_empty : BoolProperty(
-        name = "Omit Unused Weights.",
-        description = "Omit weights not in any Bounding Box.",
+    omit_empty: BoolProperty(
+        name = "Omit Unused Weights",
+        description = "Omit weights not in any Bounding Box",
         default = False)
     load_group_functions: BoolProperty(
-        name = "Load Bounding Boxes.",
-        description = "Loads the mod3 as bounding boxes.",
-        default = False,
-        )
+        name = "Load Bounding Boxes",
+        description = "Loads the MOD3 as bounding boxes",
+        default = False)
     texture_path: StringProperty(
         name = "Texture Source",
-        description = "Root directory for the MRL3 (Native PC if importing from a chunk).",
+        description = "Root directory for the MRL3 (Native PC if importing from a chunk)",
         default = "")
     import_skeleton: EnumProperty(
-        name = "Import Skeleton.",
-        description = "Imports the skeleton as an armature.",
-        items = [("None","Don't Import","Does not import the skeleton.",0),
-                  ("EmptyTree","Empty Tree","Import the skeleton as a tree of empties",1),
-                  ("Armature","Animation Armature","Import the skeleton as a blender armature",2),
+        name = "Import Skeleton",
+        description = "Imports the skeleton as an armature",
+        items = [("None", "Don't Import", "Does not import the skeleton.", 0),
+                  ("EmptyTree", "Empty Tree", "Import the skeleton as a tree of empties.", 1),
+                  ("Armature", "Animation Armature", "Import the skeleton as a Blender armature.", 2),
                   ],
         default = "EmptyTree")
     weight_format: EnumProperty(
         name = "Weight Format",
-        description = "Preserves capcom scheme of having repeated weights and negative weights by having multiple weight groups for each bone.",
-        items = [("Group","Standard","Weights under the same bone are grouped, negative weights are dropped",0),
-                 ("Signed","Signed","Weights under the same bone are grouped, negative weights are kept",1),
-                  ("Split","Split Weight Notation","Mirrors the Mod3 separation of the same weight",2),
-                  ("Slash","Split-Slash Notation","As split weight but also conserves weight order",3),
+        description = "Preserves Capcom scheme of having repeated weights and negative weights by having multiple weight groups for each bone",
+        items = [("Group", "Standard", "Weights under the same bone are grouped, negative weights are dropped", 0),
+                 ("Signed", "Signed", "Weights under the same bone are grouped, negative weights are kept", 1),
+                  ("Split", "Split Weight Notation", "Mirrors the MOD3 separation of the same weight", 2),
+                  ("Slash", "Split-Slash Notation", "Same as split weight but also preserves weight order", 3),
                   ],
         default = "Group")
 
-    def execute(self,context):
+    def execute(self, context):
         try:
-            bpy.ops.object.mode_set(mode='OBJECT')
+            bpy.ops.object.mode_set(mode = 'OBJECT')
         except:
             pass
-        bpy.ops.object.select_all(action='DESELECT')
-        Mod3File = FL.FileLike(open(self.properties.filepath,'rb').read())
+        bpy.ops.object.select_all(action = 'DESELECT')
+        Mod3File = FL.FileLike(open(self.properties.filepath, 'rb').read())
         BApi = Api.BlenderImporterAPI()
         options = self.parseOptions()
-        blenderContext = Context(self.properties.filepath,{},None)
+        blenderContext = Context(self.properties.filepath, {}, None)
         with BlenderSupressor.SupressBlenderOps():
             Mod3IL.Mod3ToModel(Mod3File, BApi, options).execute(blenderContext)
-            bpy.ops.object.select_all(action='DESELECT')
-        #bpy.ops.object.mode_set(mode='OBJECT')
-        #bpy.context.area.type = 'INFO'
+            bpy.ops.object.select_all(action = 'DESELECT')
+        # bpy.ops.object.mode_set(mode = 'OBJECT')
+        # bpy.context.area.type = 'INFO'
         return {'FINISHED'}
 
     def parseOptions(self):
         options = {}
         if self.clear_scene:
-            options["Clear"]=True
+            options["Clear"] = True
         if self.maximize_clipping:
-            options["Max Clip"]=True
+            options["Max Clip"] = True
         if self.high_lod:
-            options["High LOD"]=True
+            options["High LOD"] = True
         if self.import_header:
-            options["Scene Header"]=True
+            options["Scene Header"] = True
         if self.import_skeleton != "None":
-            options["Skeleton"]=self.import_skeleton
+            options["Skeleton"] = self.import_skeleton
         if self.import_meshparts:
-            options["Mesh Parts"]=True
+            options["Mesh Parts"] = True
         if self.high_lod:
-            options["Only Highest LOD"]=True
+            options["Only Highest LOD"] = True
         if self.import_textures:
-            options["Import Textures"]=self.texture_path
+            options["Import Textures"] = self.texture_path
         if self.import_materials:
-            options["Import Materials"]=self.texture_path
+            options["Import Materials"] = self.texture_path
         if self.omit_empty:
-            options["Omit Unused Groups"]=True
+            options["Omit Unused Groups"] = True
         if self.load_group_functions:
-            options["Load Groups and Functions"]=True
-        options["Split Weights"]=self.weight_format
+            options["Load Groups and Functions"] = True
+        options["Split Weights"] = self.weight_format
         return options
 
 def menu_func_import(self, context):
-    self.layout.operator(ImportMOD3.bl_idname, text="MHW MOD3 (.mod3)")
+    self.layout.operator(ImportMOD3.bl_idname, text = "Monster Hunter World Mesh (.mod3)")

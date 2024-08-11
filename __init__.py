@@ -4,15 +4,20 @@ Created on Wed Mar  6 13:38:47 2019
 
 @author: AsteriskAmpersand
 """
-#from .dbg import dbg_init
-#dbg_init()
+# from .dbg import dbg_init
+# dbg_init()
 
+# Values sorted according to how they appear in Blender's UI
 bl_info = {
-    "name": "MHW Mod3 Model Importer",
-    "category": "Import-Export",
-    "author": "AsteriskAmpersand (Code) & CrazyT (Structure)",
-    "location": "File > Import-Export > Mod3/MHW",
-    "blender": (2,80,0)
+    "name": "Monster Hunter World Model Importer/Exporter",
+    "description": "Import & export MOD3 files from/for Monster Hunter World. (.mod3)",
+    "location": "File > Import-Export > Monster Hunter World Mesh",
+    "author": "AsteriskAmpersand (Code), CrazyT (Structure), UnknownExplorer13 (Current Plugin Fork)",
+    "version": (2,1,0),
+    "blender": (4,0,0),
+    "tracker_url": "https://github.com/UnknownExplorer13/MHW-Mod3-Blender-Plugin/issues",
+    "doc_url": "https://github.com/Ezekial711/MonsterHunterWorldModding/wiki/Asterisk's-Plugin-Features", # Written for the original 2.79 plugin but still relevant for my fork
+    "category": "Import-Export"
 }
 
 import bpy
