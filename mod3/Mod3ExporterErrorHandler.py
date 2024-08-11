@@ -73,7 +73,7 @@ class ErrorHandler():
                 )
         self.verify()
     def blocktypeIncompatible(self, sugestion):
-        self.__setattr__(self.blocktypeLevel,True)
+        self.__setattr__("blocktypeLevel",True)
         if self.blocktypeLevel != "Ignore":
             self.MessageList.append((self.meshname, 
                     """%s: Declared blocklabel is incompatible with mesh. Lower blocktype errors to warning to allow overwriting explicit blocklabels, remove blocklabel from mesh properties or set blocklabel to %s"""%(self.blocktypeLevel, sugestion)
@@ -89,7 +89,7 @@ class ErrorHandler():
                 """Error: Face Count exceeds hard coded limit of 4294967295 faces."""
                 ))
     def propertyDuplicate(self, propertyName, storage, prop):
-        self.__setattr__(self.propertyLevel,True)
+        self.__setattr__("propertyLevel",True)
         if self.propertyLevel != "Ignore":
             message = "%s: Duplicated property %s" % (self.propertyLevel, propertyName)
             if self.section == "Meshes":
@@ -132,7 +132,7 @@ class ErrorHandler():
             propertyName = "MeshProperty:"+propertyName.split(":")[1]
         if "GroupProperty" in propertyName and "Count" not in propertyName:
             propertyName = "GroupProperty:"+propertyName.split(":")[1]
-        self.__setattr__(self.propertyLevel,True)
+        self.__setattr__("self.propertyLevel",True)
         if self.propertyLevel != "Ignore":
             message = "%s: Missing Property %s, defaults to %s"%(self.propertyLevel, propertyName, str(self.propertyDefaults[propertyName]))
             if self.section == "Meshes":
@@ -151,7 +151,7 @@ class ErrorHandler():
     
     def verifyLoadLoop(self, field, customVert, blenderVert, loopArray, mesh):
         if blenderVert.index not in loopArray:
-            self.__setattr__(self.loopLevel,True)
+            self.__setattr__("loopLevel",True)
             if self.loopLevel != "Ignore":
                 self.MessageList.append((self.meshname,"%s: Missing %s at vertex implies orphan vertex or no UV to generate normals."%(self.loopLevel, field)))
             customVert[field]=self.defaultLoops[field]
@@ -159,7 +159,7 @@ class ErrorHandler():
             customVert[field] = loopArray[blenderVert.index]
     
     def missingUV(self, vix, uvMap):
-        self.__setattr__(self.uvLevel,True)
+        self.__setattr__("uvLevel",True)
         if self.uvLevel != "Ignore":
             self.MessageList.append((self.meshname,"%s: Missing UV at vertex implies orphan vertex or corrupted UV Map."%self.uvLevel))
         return [0.0,0.0]
@@ -171,20 +171,20 @@ class ErrorHandler():
         return
     
     def uvCountExceeded(self, vert):
-        self.__setattr__(self.uvLevel,True)
+        self.__setattr__("uvLevel",True)
         if self.uvLevel != "Ignore":
             self.MessageList.append((self.meshname,"%s: More than 4 UV Maps."%self.uvLevel))
         vert["uvs"] = vert["uvs"][:4]
         return
     
     def excessColorLayers(self, colourLayers):
-        self.__setattr__(self.colourLevel,True)
+        self.__setattr__("colourLevel",True)
         if self.colourLevel != "Ignore":
             self.MessageList.append((self.meshname,"%s: More than 1 Colour Maps."%self.colourLevel))
         return colourLayers[0].data
     
     def duplicateNormal(self, loopIx, vNormal, vTangent, normals):
-        self.__setattr__(self.loopLevel,True)
+        self.__setattr__("loopLevel",True)
         if self.loopLevel != "Ignore":
             self.MessageList.append((self.meshname,"%s: Multiple different normals per face at single vertex. Consider editing custom split normals or using blender's default normals."%self.loopLevel))
         if loopIx not in self.normalOffenders:
@@ -193,7 +193,7 @@ class ErrorHandler():
         #if necessary the code can be made more complex to handle this case more elegantly for now it just keeps only the first
         
     def duplicateUV(self, loop, loopUV, uvMap):
-        self.__setattr__(self.uvLevel,True)
+        self.__setattr__("uvLevel",True)
         if self.uvLevel != "Ignore":
             self.MessageList.append((self.meshname,"%s: Multiple different uvs per loop at single vertex. Consider marking islands as seams and then splitting at seams."%self.uvLevel))
         if loop.vertex_index not in self.uvOffenders:
@@ -206,7 +206,7 @@ class ErrorHandler():
         return list(map(round,sum(colorArray,colorArray[0]*0)/len(colorArray)))
     
     def duplicateColor(self, vertIndex, color, vertColor):
-        self.__setattr__(self.colourLevel,True)
+        self.__setattr__("colourLevel",True)
         if self.colourLevel != "Ignore":
             self.MessageList.append((self.meshname,"%s: Multiple different colours per loop at single vertex."%self.colourLevel))
         if vertIndex not in self.colourOffenders:
@@ -216,12 +216,12 @@ class ErrorHandler():
         #if necessary the code can be made more complex to handle this case more elegantly for now it just keeps only the first 
 
     def uninversibleBlockLabel(self):
-        self.__setattr__(self.blocktypeLevel,True)
+        self.__setattr__("blocktypeLevel",True)
         if self.blocktypeLevel != "Ignore":
             self.MessageList.append((self.meshname,"%s: Illegal blocklabel. It's been nulled and will be directly calcualted from the mesh instead."%self.blocktypeLevel))
 
     def invalidGroupName(self, weightName):
-        self.__setattr__(self.weightLevel,True)
+        self.__setattr__("weightLevel",True)
         if self.blocktypeLevel != "Ignore":
             self.MessageList.append((self.meshname,"%s: Weight group %s not associated to any bone, consider deleting."%(self.weightLevel, weightName)))
 
@@ -231,13 +231,13 @@ class ErrorHandler():
         self.verify()
         
     def multipleNegativeWeights(self, weights):
-        self.__setattr__(self.weightCountLevel,True)
+        self.__setattr__("weightCountLevel",True)
         if self.weightCountLevel != "Ignore":
             self.MessageList.append((self.meshname,"%s: Multiple Negatives Weights on a single vertex."%(self.weightCountLevel)))
         return [sorted(weights, key=lambda x: x.weight)[0]]
 
     def weightCountExceeded(self, bufferedWeights):
-        self.__setattr__(self.weightCountLevel,True)
+        self.__setattr__("weightCountLevel",True)
         if self.weightCountLevel != "Ignore":
             self.MessageList.append((self.meshname,"%s: Vertex is weighted to more than 8 weights."%(self.weightCountLevel)))
         bufferedWeights.unsigned = sorted(bufferedWeights.unsigned, key = lambda x: 1 if x.boneId == 0 and not x.weight else -x.weight)
@@ -246,7 +246,7 @@ class ErrorHandler():
         bufferedWeights.unsigned = bufferedWeights.unsigned[:7]
         
     def negativeWeightPrecision(self, bufferedWeights, count):
-        self.__setattr__(self.weightCountLevel,True)
+        self.__setattr__("weightCountLevel",True)
         if self.weightCountLevel != "Ignore":
             self.MessageList.append((self.meshname,"%s: Vertex is weighted to %d weights with no explicit negative."%(self.weightCountLevel, count))) 
         bufferedWeights.unsigned = sorted(bufferedWeights.unsigned, key = lambda x: 1 if x.boneId == 0 and not x.weight else -x.weight)
