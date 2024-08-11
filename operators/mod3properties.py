@@ -4,14 +4,15 @@ Created on Thu Jun  4 22:11:15 2020
 
 @author: AsteriskAmpersand
 """
+
 import bpy
 
-def bone_poll(self,object):
+def bone_poll(self, object):
     return object.get('boneFunction')
 
-symmetricPair = bpy.props.PointerProperty(type=bpy.types.Object,poll=bone_poll)
+symmetricPair = bpy.props.PointerProperty(type = bpy.types.Object, poll = bone_poll)
 
-def bone_poll(self,object):
+def bone_poll(self, object):
     return object.get('enabled')
 
 class MHWSkeletonPanel(bpy.types.Panel):
@@ -32,18 +33,18 @@ class MHWSkeletonPanel(bpy.types.Panel):
         obj = context.object.MHWSkeleton
         row = layout.column()
         if not obj.enabled:
-            row.prop(obj,"enabled")
+            row.prop(obj, "enabled")
         else:
-            row.prop(obj,"enabled")
+            row.prop(obj, "enabled")
             row.prop(obj, "symmetricPair")
             row.prop(obj, "boneFunction")
             row.prop(obj, "indexHint")
             row.prop(obj, "unkn2")
 
-#, type=bpy.types.Object, poll=poll_mhr_bone
+# type = bpy.types.Object, poll = poll_mhr_bone
 class MHWSkeleton(bpy.types.PropertyGroup):
     symmetricPair = bpy.props.PointerProperty(name = "Symmetric Pair")
-    boneFunction = bpy.props.IntProperty(name = "Bone Function",default = -1)
-    indexHint = bpy.props.IntProperty(name = "Sort Priority",default = -1)
-    unkn2 = bpy.props.FloatProperty(name = "Envelope",default = 0)
-    enabled = bpy.props.FloatProperty(name = "MHW Enabled",default = False)
+    boneFunction = bpy.props.IntProperty(name = "Bone Function", default = -1)
+    indexHint = bpy.props.IntProperty(name = "Sort Priority", default = -1)
+    unkn2 = bpy.props.FloatProperty(name = "Envelope", default = 0)
+    enabled = bpy.props.FloatProperty(name = "MHW Enabled", default = False)
