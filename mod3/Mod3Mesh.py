@@ -100,7 +100,7 @@ class Mod3Mesh():
         vsub = self.Header.vertexSub
         for face in self.Faces:
             face.marshall(data)
-            vix = min(face.v1,face.v2,fac.v3)
+            vix = min(face.v1,face.v2,face.v3)
             if vix < vsub:
                 nadj = vsub - vix
                 if nadj > adj:
