@@ -1,5 +1,5 @@
 # Monster Hunter World Model Importer/Exporter
-Blender `.mod3` import/export plugin for Monster Hunter World. Originally written for Blender 2.79, updated to 4.0.
+Monster Hunter World `.mod3` import/export plugin for Blender. Originally written for Blender 2.79, updated to 4.0.
 
 ## Documentation
 Documentation on functionality can be found [here](https://github.com/Ezekial711/MonsterHunterWorldModding/wiki/Asterisk's-Plugin-Features).
@@ -14,6 +14,7 @@ Additionally, under `Asterisk's Plugin Notes` are notes on the format that are n
 4. Click on the downloaded zip then the `Install Add-on` button
 5. Enable the newly added `Monster Hunter World Model Importer/Exporter` addon
 6. Finally, go to the bottom left of the preferences window, click the 3 lines, then `Save preferences`
+	1. If `Auto-Save Preferences` is turned on in this menu you can just close the preferences window
 
 ## Author
 ### Original
