@@ -96,7 +96,7 @@ class BlenderImporterAPI(ModellingAPI):
         bpy.ops.object.select_all(action='DESELECT')
         blenderArmature = bpy.data.armatures.new('%s Armature'%filename)
         arm_ob = bpy.data.objects.new('%s Armature'%filename, blenderArmature)
-        bpy.context.scene.collection.objects.link(arm_ob)
+        bpy.context.collection.objects.link(arm_ob)
         bpy.context.view_layer.update()
         arm_ob.select_set(True)
         #arm_ob.show_x_ray = True
@@ -180,13 +180,13 @@ class BlenderImporterAPI(ModellingAPI):
                 if not modifier.vertex_group:
                     ob.modifiers.remove(modifier)
                 else:
-                    bpy.context.scene.collection.objects.active = ob
+                    bpy.context.collection.objects.active = ob
                     ob.select_set(True)
                     bpy.ops.object.mode_set(mode = 'EDIT')
                     bpy.ops.object.hook_reset(modifier = armature[bone].name)
                     bpy.ops.object.mode_set(mode = 'OBJECT')
                     ob.select_set(False)
-                    bpy.context.scene.collection.objects.active = None
+                    bpy.context.collection.objects.active = None
 
     @staticmethod
     def linkArmature(context):
@@ -298,7 +298,7 @@ class BlenderImporterAPI(ModellingAPI):
         
     @staticmethod
     def maximizeClipping(context):
-        meshes = [obj for obj in bpy.context.scene.collection.objects if obj.type == "MESH"]
+        meshes = [obj for obj in bpy.context.collection.objects if obj.type == "MESH"]
         if meshes:
             minBox = Vector(map(min,zip(*[mesh.bound_box[0] for mesh in meshes])))
             maxBox = Vector(map(max,zip(*[mesh.bound_box[6] for mesh in meshes])))
@@ -348,7 +348,7 @@ class BlenderImporterAPI(ModellingAPI):
         blenderMesh.update()
         blenderObject = bpy.data.objects.new("%s LOD %d"%(name,meshpart["properties"]["lod"]), blenderMesh)
         BlenderImporterAPI.dbg.write("\t\t\tGeometry Link\n")
-        bpy.context.scene.collection.objects.link(blenderObject)
+        bpy.context.collection.objects.link(blenderObject)
         return blenderMesh, blenderObject
     
     @staticmethod
@@ -399,7 +399,7 @@ class BlenderImporterAPI(ModellingAPI):
     def createRootNub(miniscene):
         o = bpy.data.objects.new("Root", None )
         miniscene[255]=o
-        bpy.context.scene.collection.objects.link( o )
+        bpy.context.collection.objects.link( o )
         o.show_wire = True
         #o.show_x_ray = True
         return
@@ -415,7 +415,7 @@ class BlenderImporterAPI(ModellingAPI):
         name = "BoneFunction.%03d" % bone["CustomProperties"]["boneFunction"]
         o = bpy.data.objects.new(name, None )#ix
         miniscene[ix]=o
-        bpy.context.scene.collection.objects.link( o )
+        bpy.context.collection.objects.link( o )
         #if bone["parentId"]!=255:
         parentName = bone["parentId"]
         if parentName not in miniscene:
@@ -578,7 +578,7 @@ class BlenderImporterAPI(ModellingAPI):
         constraint = lattice_ob.constraints.new("CHILD_OF")
         constraint.target = armature[box.bone()] if box.bone() in armature else None
         lattice["Type"] = "MOD3_BoundingBox_AABB"
-        bpy.context.scene.collection.objects.link(lattice_ob)
+        bpy.context.collection.objects.link(lattice_ob)
         bpy.context.view_layer.update()
         return lattice_ob
     
@@ -597,7 +597,7 @@ class BlenderImporterAPI(ModellingAPI):
             lattice_ob["bone_index"] = box.bone()
         constraint.target = armature[box.bone()] if box.bone() in armature else None
         lattice["Type"] = "MOD3_BoundingBox_MVBB"
-        bpy.context.scene.collection.objects.link(lattice_ob)
+        bpy.context.collection.objects.link(lattice_ob)
         bpy.context.view_layer.update()
         return lattice_ob
 

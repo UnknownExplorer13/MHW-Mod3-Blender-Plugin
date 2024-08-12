@@ -49,8 +49,8 @@ class MeshClone():
         return self.original
         with SupressBlenderOps():
             self.copy = self.original.copy()
-            bpy.context.scene.objects.link(self.copy)
-            bpy.context.scene.objects.active = self.copy
+            bpy.context.collection.objects.link(self.copy)
+            bpy.context.collection.objects.active = self.copy
             self.original.select = False
             self.copy.select = True
             bpy.ops.object.make_single_user(type='SELECTED_OBJECTS', object=True, obdata=True)
@@ -60,7 +60,7 @@ class MeshClone():
                 except:# Exception as e:
                     pass
             #self.copy.select = False
-            #bpy.context.scene.objects.active = None
+            #bpy.context.collection.objects.active = None
         return self.copy
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
@@ -71,7 +71,7 @@ class MeshClone():
             #self.copy
             objs = bpy.data.objects
             objs.remove(objs[self.copy.name], do_unlink=True)
-            bpy.context.scene.objects.active = None
+            bpy.context.collection.objects.active = None
             self.copyObject = None
         return False
 
@@ -198,7 +198,7 @@ class BlenderExporterAPI(ModellingAPI):
     
     @staticmethod
     def listMeshes(options):
-        return sorted([o for o in bpy.context.scene.objects 
+        return sorted([o for o in bpy.context.collection.objects
                        if o.type=="MESH" and (options.exportHidden or not o.hide_get())
                            and not("Type" in o.data and o.data["Type"]=="MOD3_VM_Mesh")
                            and not("Type" in o.data and o.data["Type"]=="MHW_Ctrl_Structure")
@@ -347,7 +347,7 @@ class BlenderExporterAPI(ModellingAPI):
         hiddenExplicitRoot = []
         explicitRoot = []
         rankings = {1:childless,2:childed,3:hiddenExplicitRoot,4:explicitRoot}
-        for o in bpy.context.scene.objects:
+        for o in bpy.context.collection.objects:
             hierarchy = BlenderExporterAPI.isCandidateRoot(o)
             if hierarchy:
                 rankings[hierarchy].append(o)
