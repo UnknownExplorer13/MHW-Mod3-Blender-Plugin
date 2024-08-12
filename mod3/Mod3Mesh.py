@@ -98,13 +98,20 @@ class Mod3Mesh():
         data.seek(self.faceOffset+self.Header.faceOffset*2)
         adj = 0
         vsub = self.Header.vertexSub
+        vcount = self.Header.vertexCount
+        vlow = vsub
+        vupp = 0
         for face in self.Faces:
             face.marshall(data)
             vix = min(face.v1,face.v2,face.v3)
+            vmax = max(face.v1,face.v2,face.v3)
             if vix < vsub:
                 nadj = vsub - vix
                 if nadj > adj:
                     adj = nadj
+            vlow = min(vlow,vix)
+            vupp = max(vupp,vmax)
+        nvcount = max(vcount,vupp - vlow + 1)
         if adj:
             for faces in self.Faces:
                 face.adjust(adj)
