@@ -14,7 +14,7 @@ bl_info = {
     "description": "Import & export MOD3 files from/for Monster Hunter World. (.mod3)",
     "location": "File > Import-Export > Monster Hunter World Mesh",
     "author": "AsteriskAmpersand (Code), CrazyT (Structure), UnknownExplorer13 (Current Plugin Fork)",
-    "version": (2, 1, 0),
+    "version": (2, 2, 0),
     "blender": (4, 0, 0),
     "tracker_url": "https://github.com/UnknownExplorer13/MHW-Mod3-Blender-Plugin/issues",
     "doc_url": "https://github.com/Ezekial711/MonsterHunterWorldModding/wiki/Asterisk's-Plugin-Features", # Written for the original 2.79 plugin but still relevant for my fork
