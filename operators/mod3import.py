@@ -15,7 +15,6 @@ from ..blender import BlenderMod3Importer as Api
 from ..blender import BlenderSupressor
 from ..common import FileLike as FL
 
-
 class Context():
     def __init__(self, path, meshes, armature):
         self.path = path

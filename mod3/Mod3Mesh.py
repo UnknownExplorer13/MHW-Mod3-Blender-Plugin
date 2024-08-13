@@ -17,34 +17,33 @@ except:
     import Cstruct as CS
     from Mod3VertexBuffers import Mod3Vertex
 
-
 class Mod3MeshPartHeader(CS.PyCStruct):
     fields = OrderedDict([
         ("shadowCast", "ushort"),
         # 19: Normal Shadows
-        # 0001 : Render Object
-        # 0010 : Cast Shadow
+        # 0001: Render Object
+        # 0010: Cast Shadow
         ("vertexCount", "ushort"),  # Count of vertices
         ("visibleCondition", "ushort"),
         ("materialIdx", "ushort"),
         ("lod", "long"),
         ("weightDynamics", "ushort"),
-        # 01:        1 - No bone weights
-        # 03:       11 - No bone weights
-        # 05:      101 - No bone weights
-        # 07:      111 - No bone weights
-        # 09:     1001 - One bone movement
-        # 11:     1011 - One bone movement
-        # 13:     1101 - One bone movement, but more than one weight per mesh
-        # 15:     1111 - One bone movement
-        # 17:    10001
-        # 25:    11001 - Multibone Movement
-        # 33:   100001 - Multibone Movement
-        # 41:   101001
-        # 49:   110001
-        # 57:   111001
-        # 65:  1000001 - 8wt Multibone Movement (8wt required)
-        # 129:10000001 - 8wt Multibone Movement (8wt required)
+        # 01:         1 - No bone weights
+        # 03:        11 - No bone weights
+        # 05:       101 - No bone weights
+        # 07:       111 - No bone weights
+        # 09:      1001 - One bone movement
+        # 11:      1011 - One bone movement
+        # 13:      1101 - One bone movement, but more than one weight per mesh
+        # 15:      1111 - One bone movement
+        # 17:     10001
+        # 25:     11001 - Multibone Movement
+        # 33:    100001 - Multibone Movement
+        # 41:    101001
+        # 49:    110001
+        # 57:    111001
+        # 65:   1000001 - 8wt Multibone Movement (8wt required)
+        # 129: 10000001 - 8wt Multibone Movement (8wt required)
         ("blockSize", "ubyte"),
         ("unkn3", "ubyte"),
         # Running subtotal of vertices of the same kind before spill (0xFFFF) before current
@@ -69,7 +68,7 @@ class Mod3MeshPartHeader(CS.PyCStruct):
         ("NULL_2", "int[4]")
     ])
     defaultProperties = {"NULL_0": 0, "NULL_1": 0,
-                         "NULL_2": [0]*4, "boundingBoxCount": None}
+                         "NULL_2": [0] * 4, "boundingBoxCount": None}
     requiredProperties = ["shadowCast", "visibleCondition", "lod",
                           "weightDynamics", "unkn3", "blocktype", "mapData",
                           "unknownIndex", "intUnknown", "materialIdx"]
@@ -79,9 +78,8 @@ class Mod3MeshPartHeader(CS.PyCStruct):
         return {prop: self.__getattribute__(prop)
                 for prop in self.requiredProperties}
 
-
 class Mod3Mesh():
-    # Header+Vertex+Faces
+    # Header + Vertex + Faces
     def __init__(self, vertexOffset, faceOffset):
         self.Header = Mod3MeshPartHeader()
         self.Vertices = []
@@ -93,9 +91,9 @@ class Mod3Mesh():
     def marshall(self, data):
         self.Header.marshall(data)
         position = data.tell()
-        self.Faces = [Mod3Face() for _ in range(self.Header.faceCount//3)]
+        self.Faces = [Mod3Face() for _ in range(self.Header.faceCount // 3)]
 
-        data.seek(self.faceOffset+self.Header.faceOffset*2)
+        data.seek(self.faceOffset + self.Header.faceOffset * 2)
         adj = 0
         vsub = self.Header.vertexSub
         vcount = self.Header.vertexCount
@@ -103,27 +101,27 @@ class Mod3Mesh():
         vupp = 0
         for face in self.Faces:
             face.marshall(data)
-            vix = min(face.v1,face.v2,face.v3)
-            vmax = max(face.v1,face.v2,face.v3)
+            vix = min(face.v1, face.v2, face.v3)
+            vmax = max(face.v1, face.v2, face.v3)
             if vix < vsub:
                 nadj = vsub - vix
                 if nadj > adj:
                     adj = nadj
-            vlow = min(vlow,vix)
-            vupp = max(vupp,vmax)
-        nvcount = max(vcount,vupp - vlow + 1)
+            vlow = min(vlow, vix)
+            vupp = max(vupp, vmax)
+        nvcount = max(vcount, vupp - vlow + 1)
         if adj:
             for faces in self.Faces:
                 face.adjust(adj)
-        data.seek((self.vertexOffset+self.Header.vertexOffset) +
-                  (self.Header.blockSize*(self.Header.vertexSub+self.Header.vertexBase-adj)))
+        data.seek((self.vertexOffset + self.Header.vertexOffset) +
+                  (self.Header.blockSize * (self.Header.vertexSub + self.Header.vertexBase - adj)))
         self.Vertices = [Mod3Vertex(self.Header.blocktype)
                          for _ in range(self.Header.vertexCount)]
         for vert in self.Vertices:
             vert.marshall(data)
         data.seek(position)
 
-    #{"mesh":pymesh, "faces":faces, "properties":meshProp, "meshname":mesh.name}
+    # {"mesh": pymesh, "faces": faces, "properties": meshProp, "meshname": mesh.name}
     def construct(self, mesh):
         header = mesh["properties"]
         faces = mesh["faces"]
@@ -150,7 +148,7 @@ class Mod3Mesh():
 
     def updateCounts(self):
         self.Header.vertexCount = self.vertexCount()
-        self.Header.faceCount = self.faceCount()*3
+        self.Header.faceCount = self.faceCount() * 3
 
     def updateVertexOffsets(self,
                             vCount,
@@ -161,7 +159,7 @@ class Mod3Mesh():
         # When blocksizes are equal Sub increases
         # when different the sub becomes an offset and resets
         # when Sub would exceed WITH CURRENT COUNT it instead goes to Base
-        #print(("%07d | "*5)%(vCount,vBufferLen,prevBase,prevVertexSub,prevBlockSize))
+        # print(("%07d | " * 5) % (vCount, vBufferLen, prevBase, prevVertexSub, prevBlockSize))
         h = self.Header
 
         if h.blockSize != prevBlockSize:
@@ -175,26 +173,26 @@ class Mod3Mesh():
             else:
                 h.vertexSub = prevVertexSub
                 h.vertexBase = prevBase
-            h.vertexOffset = vBufferLen-(h.vertexBase+h.vertexSub)*h.blockSize
+            h.vertexOffset = vBufferLen - (h.vertexBase + h.vertexSub) * h.blockSize
         h.vertexSubMirror = h.vertexSub
         h.vertexSubTotal = vCount
         h.vertexIndexSub = h.vertexSub + h.vertexCount - 1
-        return (vCount+h.vertexCount,
-                vBufferLen+h.vertexCount*h.blockSize,
+        return (vCount + h.vertexCount,
+                vBufferLen + h.vertexCount * h.blockSize,
                 h.vertexBase,
                 h.vertexSub + h.vertexCount,
                 h.blockSize)
-        #prevSub, prevBase, prevVertSub, prevVertTotal, prevOffset, prevBlockSize
+        # prevSub, prevBase, prevVertSub, prevVertTotal, prevOffset, prevBlockSize
 
     def updateFaceOffsets(self, baseOffset, currentOffset):
         self.faceOffset = baseOffset
         if currentOffset % 2:
             raise ValueError("Uneven face offset")
-        self.Header.faceOffset = currentOffset//2
-        return self.faceCount()*len(Mod3Face())+currentOffset
+        self.Header.faceOffset = currentOffset // 2
+        return self.faceCount() * len(Mod3Face()) + currentOffset
 
     @staticmethod
-    def splitWeightFunction(zippedWeightBones, slash=False):
+    def splitWeightFunction(zippedWeightBones, slash = False):
         # Might Require Remembering Negative Weight Bones
         extension = (lambda x: "/%d" % x) if slash else (lambda x: "")
         currentBones = Counter()
@@ -208,23 +206,23 @@ class Mod3Mesh():
                 boneName = (bone, "%d%s" % (0, extension(ix)))
             result[boneName] = max(weight, 0.0)
         bone, weight = zippedWeightBones[-1]
-        boneName = (bone, "%d%s" % (-1, extension(ix+1)))
+        boneName = (bone, "%d%s" % (-1, extension(ix + 1)))
         result[boneName] = max(weight, 0.0)
         return result
 
     @staticmethod
     def slashWeightFunction(zippedWeightBones):
-        return Mod3Mesh.splitWeightFunction(zippedWeightBones, slash=True)
+        return Mod3Mesh.splitWeightFunction(zippedWeightBones, slash = True)
 
     @staticmethod
     def unifiedWeightFunction(zippedWeightBones):
-        # if bone!=0])
+        # if bone != 0])
         keys = set([bone for bone, weight in zippedWeightBones])
         return {key: max(min(sum([weight for bone, weight in zippedWeightBones if bone == key and weight >= 0]), 1.0), 0.0) for key in keys}
 
     @staticmethod
     def signedWeightFunction(zippedWeightBones):
-        # if bone!=0])
+        # if bone != 0])
         keys = set([bone for bone, weight in zippedWeightBones])
         return {key: max(min(sum([weight for bone, weight in zippedWeightBones if bone == key]), 1.0), 0.0) for key in keys}
 
@@ -261,7 +259,7 @@ class Mod3Mesh():
         tangents = [(vertex.tangent.x, vertex.tangent.y,
                      vertex.tangent.z, vertex.tangent.w) for vertex in vertices]
         uvs = list(map(list, list(
-            zip(*[[(uv.uvX, 1-uv.uvY) for uv in vertex.uvs] for vertex in vertices]))))
+            zip(*[[(uv.uvX, 1 - uv.uvY) for uv in vertex.uvs] for vertex in vertices]))))
         return flat_vertices, weightGroups, normals, tangents, uvs, colour
 
     def traditionalMeshStructure(self, splitWeights):
@@ -280,7 +278,7 @@ class Mod3Mesh():
         return len(self.Vertices)
 
     def vertexBuffer(self):
-        return self.Header.blockSize*self.vertexCount()
+        return self.Header.blockSize * self.vertexCount()
 
     def faceBuffer(self):
         return sum([len(face) for face in self.Faces])
@@ -290,9 +288,8 @@ class Mod3Mesh():
 
     # Len
 
-
 class Mod3MeshCollection():
-    def __init__(self, meshCount=0, vertexOffset=None, faceOffset=None):
+    def __init__(self, meshCount = 0, vertexOffset = None, faceOffset = None):
         self.Meshes = [Mod3Mesh(vertexOffset, faceOffset)
                        for _ in range(meshCount)]
         self.BoundingBoxes = Mod3BoundingBoxes()
@@ -305,7 +302,7 @@ class Mod3MeshCollection():
             try:
                 mesh.marshall(data)
             except:
-                data.seek(pos+len(Mod3MeshPartHeader()))
+                data.seek(pos + len(Mod3MeshPartHeader()))
         self.BoundingBoxes.marshall(data)
         BoundingBoxes = iter(self.BoundingBoxes)
         try:
@@ -322,13 +319,13 @@ class Mod3MeshCollection():
             meshes.append(m)
             vertices.append(v)
             faces.append(f)
-        return b''.join(meshes)+self.BoundingBoxes.serialize()+b''.join(vertices)+b''.join(faces)
+        return b''.join(meshes) + self.BoundingBoxes.serialize() + b''.join(vertices) + b''.join(faces)
 
     def construct(self, meshparts):
         for blenMesh, modMesh in zip(meshparts, self.Meshes):
             modMesh.construct(blenMesh)
 
-        #self.Meshes.sort(key = lambda x: x.Header.blockSize)
+        # self.Meshes.sort(key = lambda x: x.Header.blockSize)
         self.BoundingBoxes.construct(
             sum(map(lambda x: x["boundingBoxes"], meshparts), []))
 
@@ -393,11 +390,11 @@ class Mod3MeshCollection():
     def __iter__(self):
         return self.Meshes.__iter__()
 
-    def traditionalMeshStructure(self, splitWeights=False):
+    def traditionalMeshStructure(self, splitWeights = False):
         tMeshCollection = []
         for mesh in self.Meshes:
             tMesh = mesh.traditionalMeshStructure(splitWeights)
-            tMesh['faces'] = [list(map(lambda x: x-mesh.Header.vertexSub, faceindices))
+            tMesh['faces'] = [list(map(lambda x: x - mesh.Header.vertexSub, faceindices))
                               for faceindices in tMesh['faces']]
             tMeshCollection.append(tMesh)
         return tMeshCollection
@@ -405,7 +402,6 @@ class Mod3MeshCollection():
     def filterLOD(self):
         self.Meshes = [
             mesh for mesh in self.Meshes if mesh.Header.lod == 1 or mesh.Header.lod == 0xFFFF]
-
 
 class Mod3Face(CS.PyCStruct):
     fields = OrderedDict([
@@ -422,17 +418,16 @@ class Mod3Face(CS.PyCStruct):
 
     def adjust(self, adjustment):
         for field in self.fields:
-            self.__setattr__(field, self.__getattribute__(field)+adjustment)
-
+            self.__setattr__(field, self.__getattribute__(field) + adjustment)
 
 class BoundingBox():
     def __init__(self, mod3bb):
         self._center = Vector(mod3bb.aabbCenter)
         self._dimensions = Vector(
-            (Vector(mod3bb.aabbMax)-Vector(mod3bb.aabbMin))[:3])
+            (Vector(mod3bb.aabbMax) - Vector(mod3bb.aabbMin))[:3])
         mat = mod3bb.oabbMatrix
-        #rows = [[mat[i+4*e] for e in range(4)] for i in range(4)]
-        rows = [[mat[4*e+i] for e in range(4)] for i in range(4)]
+        # rows = [[mat[i + 4 * e] for e in range(4)] for i in range(4)]
+        rows = [[mat[4 * e + i] for e in range(4)] for i in range(4)]
         self._matrix = Matrix(rows)
         self._vector = Vector(mod3bb.oabbVector[:3])
         self._boneIndex = mod3bb.boneIndex
@@ -457,7 +452,6 @@ class BoundingBox():
     def bone(self):
         return self._boneIndex
 
-
 class Mod3BoundingBox(CS.PyCStruct):
     fields = OrderedDict([
         ("boneIndex", "int"),
@@ -470,14 +464,13 @@ class Mod3BoundingBox(CS.PyCStruct):
         ("oabbVector", "float[4]"),
     ])
     requiredProperties = {f for f in fields if f != "spacer"}
-    defaultProperties = {"spacer": [0xCD]*12}
+    defaultProperties = {"spacer": [0xCD] * 12}
 
     def sceneProperties(self):
         return {field: getattr(self, field) for field in self.fields}
 
     def boundingBox(self):
         return BoundingBox(self)
-
 
 class Mod3BoundingBoxes(CS.PyCStruct):
     fields = OrderedDict([("count", "uint")])

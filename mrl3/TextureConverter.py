@@ -4,6 +4,7 @@ Created on Wed Mar 13 00:18:07 2019
 
 @author: AsteriskAmpersand
 """
+
 import sys
 import os
 import subprocess
@@ -11,7 +12,7 @@ import subprocess
 if sys.platform.startswith("win"):
     # Don't display the Windows GPF dialog if the invoked program dies.
     # See comp.os.ms-windows.programmer.win32
-    #  How to suppress crash notification dialog?, Jan 14,2004 -
+    #  How to suppress crash notification dialog?, Jan 14, 2004 -
     #     Raymond Chen's response [1]
 
     import ctypes
@@ -23,24 +24,24 @@ else:
     subprocess_flags = 0
 
 def convertTexToDDS(path):
-    processLocation = os.path.join(os.path.dirname(__file__),"MHWorldTex.exe")
+    processLocation = os.path.join(os.path.dirname(__file__), "MHWorldTex.exe")
     FNULL = open(os.devnull, 'w')
     args = "\"" + processLocation + "\"" + " \"" + path + "\""
     try:
-        subprocess.check_output(args, stdin=FNULL, stderr=FNULL, shell=False, creationflags=subprocess_flags)
+        subprocess.check_output(args, stdin = FNULL, stderr = FNULL, shell = False, creationflags = subprocess_flags)
     except:
         pass
-    
+
 def convertDDSToPNG(path):
-    processLocation = os.path.join(os.path.dirname(__file__),"TexConv.exe")
+    processLocation = os.path.join(os.path.dirname(__file__), "TexConv.exe")
     FNULL = open(os.devnull, 'w')
-    #Horrible Hack
+    # Horrible Hack
     if "NM" in path:
         hint = " -sepalpha -f RGBA"
     else:
-        hint = ""    
-    args = "\"" + processLocation + "\"" + " \"" + path + "\"" + hint + " -ft png -o \""+os.path.dirname(path)+ "\""
+        hint = ""
+    args = "\"" + processLocation + "\"" + " \"" + path + "\"" + hint + " -ft png -o \"" + os.path.dirname(path) + "\""
     try:
-        subprocess.check_output(args, stdin=FNULL, stderr=FNULL, shell=False, creationflags=subprocess_flags)
+        subprocess.check_output(args, stdin = FNULL, stderr = FNULL, shell = False, creationflags = subprocess_flags)
     except Exception as e:
         pass

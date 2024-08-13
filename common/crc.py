@@ -4,6 +4,7 @@ Created on Tue Mar 12 01:10:56 2019
 
 @author: AsteriskAmpersand
 """
+
 """ Base class for CRC and checksum classes.
 
   License::
@@ -24,6 +25,7 @@ Created on Tue Mar 12 01:10:56 2019
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
+
 import math
 
 REFLECT_BIT_ORDER_TABLE = (
@@ -61,7 +63,6 @@ REFLECT_BIT_ORDER_TABLE = (
     0x1F, 0x9F, 0x5F, 0xDF, 0x3F, 0xBF, 0x7F, 0xFF,
 )
 
-
 def reflectbitorder(width, value):
     """ Reflects the bit order of the given value according to the given bit width.
 
@@ -69,16 +70,12 @@ def reflectbitorder(width, value):
             width (int): bitwidth
             value (int): value to reflect
     """
-    binstr = ("0"*width + bin(value)[2:])[-width:]
+    binstr = ("0" * width + bin(value)[2:])[-width:]
     return int(binstr[::-1], 2)
-
-
 
 class CrccheckError(Exception):
     """General checksum error exception"""
     pass
-
-
 
 class CrccheckBase(object):
     """ Abstract base class for checksumming classes.
@@ -92,13 +89,13 @@ class CrccheckBase(object):
     _file_chunksize = 512
     _width = 0
 
-    def __init__(self, initvalue=None):
+    def __init__(self, initvalue = None):
         if initvalue is None:
             self._value = self._initvalue
         else:
             self._value = initvalue
 
-    def reset(self, value=None):
+    def reset(self, value = None):
         """ Reset instance.
 
             Resets the instance state to the initial value.
@@ -116,7 +113,6 @@ class CrccheckBase(object):
             self._value = value
         return self
 
-
     def process(self, data):
         """ Process given data.
 
@@ -128,7 +124,6 @@ class CrccheckBase(object):
         """
         return self
 
-
     def final(self):
         """Return final check value.
            The internal state is not modified by this so further data can be processed afterwards.
@@ -138,8 +133,7 @@ class CrccheckBase(object):
         """
         return self._value
 
-
-    def finalhex(self, byteorder='big'):
+    def finalhex(self, byteorder = 'big'):
         """Return final checksum value as hexadecimal string (without leading "0x"). The hex value is zero padded to bitwidth/8.
            The internal state is not modified by this so further data can be processed afterwards.
 
@@ -152,8 +146,7 @@ class CrccheckBase(object):
         except AttributeError:
             return "".join(["{:02x}".format(b) for b in asbytes])
 
-
-    def finalbytes(self, byteorder='big'):
+    def finalbytes(self, byteorder = 'big'):
         """Return final checksum value as bytes.
            The internal state is not modified by this so further data can be processed afterwards.
 
@@ -173,7 +166,6 @@ class CrccheckBase(object):
                 asbytes.reverse()
             return asbytes
 
-
     def value(self):
         """Returns current intermediate value.
            Note that in general final() must be used to get the a final value.
@@ -183,9 +175,8 @@ class CrccheckBase(object):
         """
         return self._value
 
-
     @classmethod
-    def calc(cls, data, initvalue=None, **kwargs):
+    def calc(cls, data, initvalue = None, **kwargs):
         """ Fully calculate CRC/checksum over given data.
 
             Args:
@@ -199,9 +190,8 @@ class CrccheckBase(object):
         inst.process(data)
         return inst.final()
 
-
     @classmethod
-    def calchex(cls, data, initvalue=None, byteorder='big', **kwargs):
+    def calchex(cls, data, initvalue = None, byteorder = 'big', **kwargs):
         """Fully calculate checksum over given data. Return result as hex string.
 
             Args:
@@ -216,9 +206,8 @@ class CrccheckBase(object):
         inst.process(data)
         return inst.finalhex(byteorder)
 
-
     @classmethod
-    def calcbytes(cls, data, initvalue=None, byteorder='big', **kwargs):
+    def calcbytes(cls, data, initvalue = None, byteorder = 'big', **kwargs):
         """Fully calculate checksum over given data. Return result as bytearray.
 
             Args:
@@ -233,9 +222,8 @@ class CrccheckBase(object):
         inst.process(data)
         return inst.finalbytes(byteorder)
 
-
     @classmethod
-    def selftest(cls, data=None, expectedresult=None, **kwargs):
+    def selftest(cls, data = None, expectedresult = None, **kwargs):
         """ Selftest method for automated tests.
 
             Args:
@@ -251,7 +239,6 @@ class CrccheckBase(object):
         result = cls.calc(data, **kwargs)
         if result != expectedresult:
             raise CrccheckError("{:s}: expected {:s}, got {:s}".format(cls.__name__, hex(expectedresult), hex(result)))
-
 
 class CrcBase(CrccheckBase):
     """Abstract base class for all Cyclic Redundancy Checks (CRC) checksums"""
@@ -302,7 +289,6 @@ class CrcBase(CrccheckBase):
             crc >>= diff8
         self._value = crc
         return self
-
 
     def final(self):
         """ Return final CRC value.
@@ -363,4 +349,3 @@ class CrcJamcrc(Crc32):
     _reflect_output = True
     _xor_output = 0x00000000
     _check_result = 0x340BC6D9
-    

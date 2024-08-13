@@ -4,6 +4,7 @@ Created on Sun Feb 24 18:22:05 2019
 
 @author: AsteriskAmpersand
 """
+
 import os
 try:
     from ..mod3 import Mod3
@@ -19,10 +20,8 @@ except:
 
 from ..blender.BlenderMod3Importer import BlenderImporterAPI
 
-
 class CorruptModel(Exception):
     pass
-
 
 class Mod3ToModel():
     def __init__(self, Mod3File, Api, options):
@@ -111,7 +110,7 @@ class Mod3ToModel():
 
     def loadMaterial(self, matPath):
         self.material = Mrl3.MRL3()
-        materialPath = matPath[:-5]+".mrl3"
+        materialPath = matPath[:-5] + ".mrl3"
         try:
             materialFile = open(materialPath, "rb")
         except:
@@ -145,12 +144,11 @@ class Mod3ToModel():
         self.model.filterLOD()
         return
 
-###############################################################################
-###############################################################################
+# =============================================================================
+# =============================================================================
 # Material Structuring
-###############################################################################
-###############################################################################
-
+# =============================================================================
+# =============================================================================
 
 def materialPathForkingResolution(modelPath, texturePath, chunkPath):
     BlenderImporterAPI.dbg.write("\tModel Path: %s\n" % modelPath)
@@ -162,13 +160,13 @@ def materialPathForkingResolution(modelPath, texturePath, chunkPath):
         chunkPath, texturePath), os.path.join(modelFolder, filename)]
     for path in pathCandidates:
         BlenderImporterAPI.dbg.write("\tAttempting: %s\n" % path)
-        if os.path.exists(path+".PNG"):
+        if os.path.exists(path + ".PNG"):
             return path
-        elif os.path.exists(path+".dds"):
-            TextureConverter.convertDDSToPNG(path+".dds")
+        elif os.path.exists(path + ".dds"):
+            TextureConverter.convertDDSToPNG(path + ".dds")
             return path
-        elif os.path.exists(path+".tex"):
-            TextureConverter.convertTexToDDS(path+".tex")
-            TextureConverter.convertDDSToPNG(path+".dds")
+        elif os.path.exists(path + ".tex"):
+            TextureConverter.convertTexToDDS(path + ".tex")
+            TextureConverter.convertDDSToPNG(path + ".dds")
             return path
     return

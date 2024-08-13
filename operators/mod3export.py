@@ -50,8 +50,7 @@ class ExportMOD3(Operator, ExportHelper):
         items= [("Calculate", "Calculate", "Recalculates a box for each mesh", 0),
                 ("Explicit", "Explicit", "Exports Lattices as Bounding Boxes", 1)
                 ],
-        default = "Calculate",
-        )
+        default = "Calculate")
     errorItems = [("Ignore", "Ignore", "Will not log warnings. Catastrophical errors will still break the process", 0),
                   ("Warning", "Warning", "Will be logged as a warning. These are displayed in the console. (Window > Toggle System Console)", 1),
                   ("Error", "Error", "Will stop the exporting process. An error will be displayed and the log will show details. (Window > Toggle System Console)", 2),
@@ -72,7 +71,7 @@ class ExportMOD3(Operator, ExportHelper):
                     items = errorItems,
                     default = pred)"""
     for prop, name, desc, pred in zip(levelProperties, levelNames, levelDescription, levelDefaults):
-        exec("%s : %s"%(prop, propString))
+        exec("%s : %s" % (prop, propString))
 
     def execute(self, context):
         self.cleanScene(context)
