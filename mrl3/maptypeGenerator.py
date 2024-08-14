@@ -12,7 +12,7 @@ shaderstring = "SSShadow,tShadowMap,gHotLightsSRV,gTileLightParamSRV,tileLightin
 maptypes = [hex(generalhash(resource)) for resource in shaderstring.split(',')]
 maptypeTranslation = {generalhash(resource)&0xFFFFF: resource for resource in shaderstring.split(',')}
 with open("maptype.py","w") as outf:
-    outf.write("maptypeTranslation = {\n")
-    for key, val in maptypeTranslation.items():
-        outf.write("\t%d: '%s',\n" % (key, val))
-    outf.write("}")
+	outf.write("maptypeTranslation = {\n")
+	for key, val in maptypeTranslation.items():
+		outf.write("\t%d: '%s',\n" % (key, val))
+	outf.write("}")
